@@ -31,6 +31,7 @@ export default {
     { src: '~/plugins/click-outside.js', mode: 'client' },
     { src: '~/plugins/facebook.js', mode: 'client' },
     { src: '~/plugins/gtag.ts', mode: 'client' },
+    { src: '~/plugins/web3.ts', mode: 'client' },
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

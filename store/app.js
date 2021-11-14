@@ -3,29 +3,27 @@ export const state = () => ({
     open: false,
     landingNavigation: [
       {
-        route: '/',
-        disabled: true,
-        disabledTitle: 'coming soon',
+        route: 'catalog',
         label: 'Launch APP',
       },
+      // {
+      //   href: '/',
+      //   label: 'Docs',
+      // },
       {
-        href: '/',
-        label: 'Docs',
-      },
-      {
-        href: '/',
+        href: 'https://github.com/Candy-Shop-One/CandyShop-web',
         label: 'Github',
       },
+      // {
+      //   href: '/',
+      //   label: 'Medium',
+      // },
       {
-        href: '/',
-        label: 'Medium',
-      },
-      {
-        href: '/',
+        href: 'https://twitter.com/0xCandyDapp',
         label: 'Twitter',
       },
       {
-        href: '/',
+        href: ' https://t.me/CandyDapp_community',
         label: 'Telegram',
       },
     ],
@@ -51,19 +49,19 @@ export const state = () => ({
     ],
     socials: [
       {
-        href: '/',
+        href: 'https://twitter.com/0xCandyDapp',
         icon: 'mono/twitter',
       },
+      // {
+      //   href: '/',
+      //   icon: 'mono/medium',
+      // },
       {
-        href: '/',
-        icon: 'mono/medium',
-      },
-      {
-        href: '/',
+        href: 'https://github.com/Candy-Shop-One/CandyShop-web',
         icon: 'mono/github',
       },
       {
-        href: '/',
+        href: 'https://t.me/CandyDapp_community',
         icon: 'mono/telegram',
       },
     ],
@@ -85,7 +83,7 @@ export const state = () => ({
         label: 'Analytics charts',
       },
       {
-        href: '/',
+        href: 'https://twitter.com/0xCandyDapp',
         label: 'Twitter',
       },
       {
@@ -106,7 +104,7 @@ export const state = () => ({
         label: 'Blog',
       },
       {
-        href: '/',
+        href: 'https://github.com/SuSy-One/candyshop-web',
         label: 'Github',
       },
 
@@ -150,7 +148,7 @@ export const state = () => ({
     ],
     socials: [
       {
-        href: '/',
+        href: 'https://twitter.com/0xCandyDapp',
         icon: 'mono/twitter',
       },
       {
@@ -158,11 +156,11 @@ export const state = () => ({
         icon: 'mono/medium',
       },
       {
-        href: '/',
+        href: 'https://github.com/SuSy-One/candyshop-web',
         icon: 'mono/github',
       },
       {
-        href: '/',
+        href: 'https://t.me/CandyDapp_community',
         icon: 'mono/telegram',
       },
     ],

@@ -13,7 +13,7 @@
 
     :class="[disabled ? 'relative hover:no-underline' : '']">
     <span
-      v-if="disabled && disabledTitle && !interface"
+      v-if="disabled && disabledTitle && !interfaceC"
       class="
         absolute
         top-0
@@ -37,7 +37,7 @@
       <slot/>
     </span>
     <span
-      v-if="disabled && disabledTitle && interface"
+      v-if="disabled && disabledTitle && interfaceC"
       class="
       px-1
       text-[10px]
@@ -72,7 +72,7 @@ export default Vue.extend({
       default: '',
     },
 
-    interface: {
+    interfaceC: {
       type: Boolean,
       default: false,
     },

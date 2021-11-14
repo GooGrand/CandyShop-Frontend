@@ -18,7 +18,7 @@
         <div class="bg-dark-charcoal rounded-[10px] min-h-[215px] flex flex-col justify-center items-center">
           <img class="w-[86px] h-[80px] object-center object-contain mb-[30px]" :src="img" :alt="label">
           <btn v-show="!connected" variant="gradient" rounded  class="w-[150px]"
-               @click="handleConnectWallet">
+               @click="onClickMetamaskConnect">
             Connect
           </btn>
         </div>
@@ -27,36 +27,154 @@
   </modal>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from 'vue'
+import { WalletProvider, WalletBody, isWalletEqual } from '~/store/wallet'
+import { Web3WalletConnector, availableChains, Chains, Invoker } from '~/utils/metamask'
+import logger from '~/utils/logger'
+import { metamaskBus } from '~/components/metamaskBus'
 
+const invoker = new Invoker();
+
+interface State {
+  userConnectOccured: boolean
+  balanceWatchInterval: NodeJS.Timeout
+  userLoggedOnce: Array<boolean>
+}
+
+const connector = new Web3WalletConnector()
 export default Vue.extend({
-  data: () => ({
+  data: (): State => ({
     connected: false,
+    userConnectOccured: false,
+    // @ts-ignore
+    balanceWatchInterval: 0,
+    WalletProvider,
+    userLoggedOnce: [false, false],
+    userLoggedOncePhantom: false,
   }),
   computed: {
-    modals() {
-      return this.$store.getters['app/modals'];
+    modals(): any {
+      return this.$store.getters['app/modals']
     },
-    modal() {
-      return this.modals[this.modals.length - 1];
+    modal(): any {
+      return this.modals[this.modals.length - 1]
     },
-    data() {
-      return this.modal?.data;
+    data(): any {
+      return this.modal?.data
     },
-    label() {
-      return this.data?.label;
+    label(): string {
+      return this.data?.label
     },
-    img() {
-      return this.data?.img;
+    provider(): string {
+      return this.data?.provider
+    },
+    img(): String {
+      return this.data?.img
+    },
+    // импортированный код
+
+    isWalletUpdateAllowed(): boolean {
+      return (
+        this.userConnectOccured ||
+        this.$store.getters['wallet/isWalletAvailable']
+      )
+    },
+  },
+  mounted() {
+    this.userLoggedOnce[WalletProvider.Metamask] = Boolean(
+      window.localStorage.getItem('logged_once')
+    )
+      const connect = this.connectMetamask.bind(this)
+      setTimeout(connect, 3000)
+    metamaskBus.$on('logout', (data: WalletProvider) => {
+      this.logWalletOut(data)
+    })
+    metamaskBus.$on('connect', async () => {
+      await this.connectMetamask()
+    })
+  },
+  created() {
+    const fn = () => {
+      if (!this.isWalletUpdateAllowed) {
+        return
+      }
+      this.walletDataUpdate()
     }
+    this.balanceWatchInterval = setInterval(fn.bind(this), 4000)
+  },
+  beforeDestroy() {
+    clearInterval(this.balanceWatchInterval)
   },
   methods: {
-    handleConnectWallet() {
-      this.data.callbackConnect && this.data.callbackConnect()
-      this.connected = false
-    }
-  }
+    async buildWalletBody(
+      provider: WalletProvider
+    ): Promise<Array<WalletBody>> {
+      const address = await invoker.resolveCurrentAddress();
+      const id: Chains = await invoker.getNetworkVersion();
+      const label: string = availableChains[id]
+        ? availableChains[id].chainName
+        : 'Unknown'
+
+      const oldWalletData = this.$store.getters['wallet/currentWallet']
+      const updatedWalletBody = {
+        isConnected: true,
+        address,
+        checked: true,
+        wallet: { id, label },
+        provider,
+      }
+      return [updatedWalletBody, oldWalletData]
+    },
+    async walletDataUpdate() {
+      if (!this.isWalletUpdateAllowed) return
+      await this.checkWalletData(WalletProvider.Metamask)
+    },
+    async checkWalletData(provider: WalletProvider): Promise<void> {
+      const [updatedWalletBody, oldWalletData] = await this.buildWalletBody(
+        provider
+      )
+      if (isWalletEqual(oldWalletData, updatedWalletBody)) {
+        return
+      }
+      this.$store.commit('wallet/updateWalletData', {
+        // eslint-disable-next-line
+        provider: provider,
+        body: updatedWalletBody,
+      })
+    },
+    dispatch() {
+      const wallet = this.$store.getters['wallet/currentWallet']
+      const provider = wallet.provider
+      this.userConnectOccured = false
+      this.$store.dispatch('wallet/disconnectWallet', { provider }) // передавать кошелек для разлогина
+    },
+    logWalletOut(walletName: WalletProvider) {
+      // добавил строку кошелька который разлогиниваем
+      // необходимо передавать какой кошелек мы разлогиниваем
+      window.localStorage.removeItem('logged_once')
+      window.localStorage.removeItem('logged_once_phantom')
+      clearInterval(this.balanceWatchInterval)
+      setTimeout(this.dispatch.bind(this, walletName), 1000)
+    },
+    async connectMetamask() {
+      const isConnected = connector.ethEnabled() // возвращает тру и подлкючает аддресс
+      if (!isConnected) {
+        return
+      }
+      await this.checkWalletData(WalletProvider.Metamask)
+      this.userConnectOccured = true
+      window.localStorage.setItem('logged_once', 'true') // change to wallet name logged_once_phantom (DONE)
+    },
+    async onClickMetamaskConnect() {
+      try {
+        await this.connectMetamask()
+      } catch (err) {
+        logger({ err })
+      } finally {
+        this.$store.commit('app/CLOSE_MODAL')
+      }
+    },
+  },
 })
 </script>
-

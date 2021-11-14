@@ -1,6 +1,7 @@
 <template>
   <div class="flex justify-center">
-    <div
+    <nuxt-link
+      to="/catalog"
       class="
         relative
         flex
@@ -16,18 +17,6 @@
         rounded-[26px]
       "
     >
-      <img
-        src="~/assets/img/landing/coming-soon.svg"
-        alt="coming soon"
-        class="
-          absolute
-          left-[50%]
-          top-0
-          translate-x-[-50%] translate-y-[-50%]
-          w-[72px]
-          h-[18px]
-        "
-      />
       <span
         class="
           text-[13px]
@@ -35,11 +24,10 @@
           leading-[15px]
           lg:leading-[19px]
           font-bold
-          opacity-50
         "
         >LAUNCH APP</span
       >
-    </div>
+    </nuxt-link>
 
     <button
       class="

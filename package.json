@@ -25,6 +25,7 @@
     "@nuxtjs/svg-sprite": "^0.5.2",
     "@types/uuid": "^8.3.1",
     "core-js": "^3.15.1",
+    "lodash": "^4.17.21",
     "nuxt": "^2.15.7",
     "nuxt-rfg-icon": "^0.6.4",
     "supports-webp": "2.0.1",
@@ -44,7 +45,10 @@
     "@nuxtjs/storybook": "^4.1.1",
     "@nuxtjs/stylelint-module": "^4.0.0",
     "@nuxtjs/tailwindcss": "^4.2.1",
+    "@types/big.js": "^6.1.1",
+    "@types/lodash": "^4.14.176",
     "autoprefixer": "^10.3.4",
+    "big.js": "^6.1.1",
     "eslint": "^7.29.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-nuxt": "^2.0.0",
@@ -61,6 +65,7 @@
     "stylelint": "^13.13.1",
     "stylelint-config-prettier": "^8.0.2",
     "stylelint-config-standard": "^22.0.0",
-    "ts-node": "^10.2.1"
+    "ts-node": "^10.2.1",
+    "web3": "^1.6.0"
   }
 }
