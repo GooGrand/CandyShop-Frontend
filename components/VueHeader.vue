@@ -84,7 +84,7 @@
               :route="item.route"
               :disabled="item.disabled"
               :disabled-title="item.disabledTitle"
-              :interface="item.interface"
+              :interface-c="item.interface"
               class="px-5 text-[14px]"
             >
               <span
@@ -249,6 +249,7 @@ export default Vue.extend({
       return this.$store.getters['wallet/currentWallet']
     },
     currentAddress(): string {
+      if(!this.isWalletAvailable) return '';
       return (
         this.currentWallet.address.slice(0, 6) +
         '...' +

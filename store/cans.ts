@@ -1,9 +1,9 @@
 import _ from 'lodash'
-import { Commit, GetterTree, ActionTree } from 'vuex'
-import { Can } from '~/utils/candies'
-import { Chains } from '~/utils/metamask'
+import { Commit, GetterTree, ActionTree, Store } from 'vuex'
+import { Can, getCans } from '~/utils/candies'
 interface State {
   processingCan: Can
+  cans: Can[]
 }
 // edited via phone, will be prettied
 const defaultCan: Can = {
@@ -48,20 +48,43 @@ const defaultCan: Can = {
   wormhole_address: '0x0bE8009fE45b0605395e8DAB96C311477a0BbDB4',
 }
 
-export const state = () => {
-  return {
-    processingCan: defaultCan,
+
+
+//Vuex
+import Vue from 'vue'
+import Vuex from 'vuex'
+
+Vue.use(Vuex);
+
+const store = new Vuex.Store({
+  state : {
+      processingCan: defaultCan,
+      cans: [] as Can[],
+  },
+  actions: {
+    async uploadCans({ commit }: { commit: Commit }) {
+      const candies = await getCans()
+      commit('setCandies', {
+        candies,
+      })
+    },
+  },
+  mutations: {
+    setCan(state: State, candy: Can) {
+      state.processingCan = candy
+    },
+    setCandies(state: State, { candies }: { candies: Can[] }) {
+      state.cans = candies
+    },
+  },
+  getters: {
+    currentCan: (state: State) => {
+      return state.processingCan
+    },
+    getCandies: (state: State) => {
+      return state.cans
+    },
   }
-}
+});
 
-export const mutations = {
-  setCan(state: State, candy: Can) {
-    state.processingCan = candy
-  },
-}
-
-export const getters: GetterTree<State, any> = {
-  currentCan: (state: State) => {
-    return state.processingCan
-  },
-}
+export default store

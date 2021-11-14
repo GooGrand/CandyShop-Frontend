@@ -72,7 +72,7 @@ export default Vue.extend({
       default: '',
     },
 
-    interface: {
+    interfaceC: {
       type: Boolean,
       default: false,
     },

@@ -224,20 +224,30 @@
         </div>
         <div class="">the standard fee of the outbound network</div>
       </div>
-      <div class="flex mt-[22px]">
+      <div v-if="!isWalletAvailable" class="flex mt-[22px]" >
         <btn
           block
-          v-if="status === Status.Approve"
           rounded
           variant="gradient"
-          :disabled="processing"
+          @click="connect"
+        >
+          Connect MetaMask
+        </btn>
+      </div>
+      <div v-else class="flex mt-[22px]" >
+        <btn
+          v-if="status === Status.Approve"
+          block
+          rounded
+          variant="gradient"
+          :disabled="processing || invalidInput"
           @click="approve"
         >
           Approve
         </btn>
         <btn
-          block
           v-else
+          block
           rounded
           variant="gradient"
           :disabled="processing"
@@ -277,6 +287,10 @@ export default Vue.extend({
     weiToSend: '',
   }),
   computed: {
+    invalidInput(): boolean {
+      // @ts-ignore
+      return Number(this.amount) === 0 || this.amount > this.tokenBalance.toEther().toNumber();
+    },
     amountLpOut(): string {
       if (!this.amount) return '0'
       return amountLpOut(
@@ -321,7 +335,19 @@ export default Vue.extend({
     }
   },
   methods: {
+    connect() {
+         const modal = JSON.parse(
+        JSON.stringify(this.$store.getters['app/exampleModals'].connectWallet)
+      )
+
+      modal.data.callbackConnect = () => {
+        this.connected = true
+        this.$store.commit('app/CLOSE_MODAL')
+      }
+      this.$store.commit('app/PUSH_MODAL', modal)
+    },
     async setBalance() {
+      if(!this.isWalletAvailable) return;
       let amount;
       let decimals
       if(this.can.pool_meta.native) {

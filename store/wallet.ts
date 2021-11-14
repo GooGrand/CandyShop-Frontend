@@ -58,6 +58,8 @@ export const state = () => {
 }
 
 export const actions: ActionTree<State, any> = {
+  // updateCanData({ commit }) {
+  // },
   disconnectWallet({ commit }: {commit: Commit}, { provider }: {provider: WalletProvider}) {
     const metamask = buildWallet()
 

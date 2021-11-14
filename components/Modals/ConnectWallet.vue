@@ -90,6 +90,9 @@ export default Vue.extend({
     metamaskBus.$on('logout', (data: WalletProvider) => {
       this.logWalletOut(data)
     })
+    metamaskBus.$on('connect', async () => {
+      await this.connectMetamask()
+    })
   },
   created() {
     const fn = () => {

@@ -155,7 +155,7 @@
                   ml-[-7px]
                 "
               >
-                <icon class="text-base" name="mono/usdc" />
+                <icon class="text-base" :name="'tokens/'+item.pool_meta.token_img" />
               </div>
             </div>
             <span class="font-medium text-xl pl-2 text-[#FF00F5]">
@@ -232,20 +232,20 @@ export default Vue.extend({
   data: () => ({
     apy: 'asc',
     chains,
-    cans: [] as Can[],
-    loaded: false,
     types,
     dropdown: false,
     choosenOption: 'All chains',
     catalogType: types.All as CatalogTypes,
   }),
-  watch: {
-    async catalogType() {
-      await this.updateCans()
+  computed: {
+    loaded(): boolean {
+      return this.cans.length > 0
     },
+    cans(): Can[] {
+      return this.$store.getters['cans/getCandies'];
+    }
   },
   async mounted() {
-    await this.updateCans()
   },
   methods: {
     async updateCans() {
