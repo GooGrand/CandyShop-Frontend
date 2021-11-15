@@ -1,5 +1,8 @@
 import { Chains } from './metamask'
 import { TokenAmount } from './safe-math'
+import { AbiItem } from 'web3-utils'
+import { createWeb3Instance } from '~/plugins/web3'
+import CanAbi from '~/abis/Can.json'
 
 interface ChainMeta {
   chain_icon: string
@@ -14,7 +17,7 @@ interface PoolMeta {
   token_pair_name: string
   candy_picture: string
   token_img: string
-  native: boolean;
+  native: boolean
 }
 export type Can = {
   apy: string
@@ -69,6 +72,18 @@ export async function getCans(
   return body
 }
 
+export async function getCanBalance(
+  { rpc_url, can_address }: Can,
+  userAddress: string
+): Promise<string[]> {
+  const web3 = createWeb3Instance(rpc_url)
+  const contract = new web3.eth.Contract(CanAbi as AbiItem[], can_address)
+  const { providedAmount, aggregatedReward } = await contract.methods
+    .usersInfo(userAddress)
+    .call()
+  return [providedAmount, aggregatedReward]
+}
+
 /**
  *
  * @param tokenAmountIn token amount to be inserted in pool
@@ -81,6 +96,6 @@ export function amountLpOut(
   totalSupply: TokenAmount,
   tokenReserve: TokenAmount
 ): TokenAmount {
-  const res = tokenAmountIn.wei.mul(totalSupply.wei).div(tokenReserve.wei);
-  return new TokenAmount(res, 18);
+  const res = tokenAmountIn.wei.mul(totalSupply.wei).div(tokenReserve.wei)
+  return new TokenAmount(res, 18)
 }

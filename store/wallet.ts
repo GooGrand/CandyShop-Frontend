@@ -1,6 +1,8 @@
 import _ from 'lodash'
-import { Commit, GetterTree, ActionTree } from "vuex";
-import { Chains } from '~/utils/metamask';
+import { Commit, GetterTree, ActionTree } from 'vuex'
+import { Chains } from '~/utils/metamask'
+import { Can, getCanBalance } from '~/utils/candies'
+import { TokenAmount } from '~/utils/safe-math'
 
 export enum WalletProvider {
   Metamask,
@@ -10,11 +12,18 @@ type State = {
   [key in WalletProvider]: WalletBody
 }
 
+interface UserCanData {
+  paid: TokenAmount
+  earned: TokenAmount
+  token: Can
+}
+
 export interface WalletBody {
   provider: WalletProvider | null
   isConnected: boolean
   checked: boolean
-  wallet: Wallet,
+  wallet: Wallet
+  activeCans: UserCanData[]
   address: string
 }
 
@@ -43,11 +52,12 @@ export const buildWallet = (provider = null): WalletBody => {
     provider,
     checked: false,
     isConnected: false,
-    address: "",
+    address: '',
+    activeCans: [],
     wallet: {
-      label: "",
-      id: Chains.Eth
-    }
+      label: '',
+      id: Chains.Eth,
+    },
   }
 }
 
@@ -58,9 +68,26 @@ export const state = () => {
 }
 
 export const actions: ActionTree<State, any> = {
-  // updateCanData({ commit }) {
-  // },
-  disconnectWallet({ commit }: {commit: Commit}, { provider }: {provider: WalletProvider}) {
+  async updateCanData({ commit, rootState, state }, { provider }: { provider: WalletProvider }) {
+    /**
+     * Copy array in case of state changes
+     */
+    const available = [...rootState.cans.cans]
+    const cans = [];
+    for (const token of available) {
+      const [paid, earned] = await getCanBalance(token, state[WalletProvider.Metamask].address)
+      /**
+       * It is beter to save the whole Can in case of array shuffle.
+       * Accessing the property by index is faster, but unsecure
+       */
+      cans.push({earned, paid, token})
+    }
+    commit("updateCans", {provider, cans})
+  },
+  disconnectWallet(
+    { commit }: { commit: Commit },
+    { provider }: { provider: WalletProvider }
+  ) {
     const metamask = buildWallet()
 
     commit('updateWalletData', {
@@ -71,7 +98,14 @@ export const actions: ActionTree<State, any> = {
 }
 
 export const mutations = {
-  updateWalletData(state: State, { provider, body }: {provider: WalletProvider, body: WalletBody}) {
+  updateCans(state: State, { provider, cans }: { provider: WalletProvider, cans: UserCanData[] }) {
+    // Use operator spread to prevent possible mutations
+    state[provider].activeCans = [...cans]
+  },
+  updateWalletData(
+    state: State,
+    { provider, body }: { provider: WalletProvider; body: WalletBody }
+  ) {
     state[provider].checked = false
 
     state[provider] = {
@@ -85,9 +119,9 @@ export const getters: GetterTree<State, any> = {
   currentWallet: (state: State) => {
     // we look through available wallets and take the first one that is logged
     for (const wallet of Object.keys(state)) {
-       //@ts-ignore
+      //@ts-ignore
       if (state[wallet] && state[wallet].checked) {
-       //@ts-ignore
+        //@ts-ignore
         return state[wallet]
       }
     }

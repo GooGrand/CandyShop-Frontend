@@ -1,24 +1,78 @@
 <template>
-  <modal name="connect-wallet"
-  @close="$store.commit('app/CLOSE_MODAL')">
-    <div class="relative h-full bg-white rounded-[23px] min-h-[307px]  sm:py-[44px] p-6 sm:px-[40px] sm:min-w-[610px]">
-
+  <modal name="connect-wallet" @close="$store.commit('app/CLOSE_MODAL')">
+    <div
+      class="
+        relative
+        h-full
+        bg-white
+        rounded-[23px]
+        min-h-[307px]
+        sm:py-[44px]
+        p-6
+        sm:px-[40px] sm:min-w-[610px]
+      "
+    >
       <button
-        class="absolute z-10 right-[12px] top-[12px] bg-ghost-white text-vampire-black hover:text-[#FF00F5]  text-[12px] p-0 rounded-full w-[27px] h-[27px] flex items-center justify-center"
+        class="
+          absolute
+          z-10
+          right-[12px]
+          top-[12px]
+          bg-ghost-white
+          text-vampire-black
+          hover:text-[#FF00F5]
+          text-[12px]
+          p-0
+          rounded-full
+          w-[27px]
+          h-[27px]
+          flex
+          items-center
+          justify-center
+        "
         aria-label="Close the modal window"
-        @click="$store.commit('app/CLOSE_MODAL')">
-        <icon name="mono/close" class="fill-current stroke-current"/>
+        @click="$store.commit('app/CLOSE_MODAL')"
+      >
+        <icon name="mono/close" class="fill-current stroke-current" />
       </button>
 
       <div
-        class="mb-[18px] text-[26px] text-[#12161D] leading-none text-center font-medium text-center">
+        class="
+          mb-[18px]
+          text-[26px] text-[#12161D]
+          leading-none
+          text-center
+          font-medium
+          text-center
+        "
+      >
         Connect to {{ label }}
       </div>
-      <div class="flex border-[1px] border-[#B85DFF] rounded-[23px] justify-center">
-        <div class="bg-dark-charcoal rounded-[10px] min-h-[215px] flex flex-col justify-center items-center">
-          <img class="w-[86px] h-[80px] object-center object-contain mb-[30px]" :src="img" :alt="label">
-          <btn v-show="!connected" variant="gradient" rounded  class="w-[150px]"
-               @click="onClickMetamaskConnect">
+      <div
+        class="flex border-[1px] border-[#B85DFF] rounded-[23px] justify-center"
+      >
+        <div
+          class="
+            bg-dark-charcoal
+            rounded-[10px]
+            min-h-[215px]
+            flex flex-col
+            justify-center
+            items-center
+          "
+        >
+          <img
+            class="w-[86px] h-[80px] object-center object-contain mb-[30px]"
+            :src="img"
+            :alt="label"
+          />
+          <btn
+            v-show="!connected"
+            variant="gradient"
+            rounded
+            class="w-[150px]"
+            @click="onClickMetamaskConnect"
+          >
             Connect
           </btn>
         </div>
@@ -30,25 +84,23 @@
 <script lang="ts">
 import Vue from 'vue'
 import { WalletProvider, WalletBody, isWalletEqual } from '~/store/wallet'
-import { Web3WalletConnector, availableChains, Chains, Invoker } from '~/utils/metamask'
+import {
+  Web3WalletConnector,
+  availableChains,
+  Chains,
+  Invoker,
+} from '~/utils/metamask'
 import logger from '~/utils/logger'
 import { metamaskBus } from '~/components/metamaskBus'
 
-const invoker = new Invoker();
-
-interface State {
-  userConnectOccured: boolean
-  balanceWatchInterval: NodeJS.Timeout
-  userLoggedOnce: Array<boolean>
-}
+const invoker = new Invoker()
 
 const connector = new Web3WalletConnector()
 export default Vue.extend({
-  data: (): State => ({
+  data: () => ({
     connected: false,
     userConnectOccured: false,
-    // @ts-ignore
-    balanceWatchInterval: 0,
+    balanceWatchInterval: 0 as unknown as NodeJS.Timeout,
     WalletProvider,
     userLoggedOnce: [false, false],
     userLoggedOncePhantom: false,
@@ -72,8 +124,6 @@ export default Vue.extend({
     img(): String {
       return this.data?.img
     },
-    // импортированный код
-
     isWalletUpdateAllowed(): boolean {
       return (
         this.userConnectOccured ||
@@ -85,8 +135,8 @@ export default Vue.extend({
     this.userLoggedOnce[WalletProvider.Metamask] = Boolean(
       window.localStorage.getItem('logged_once')
     )
-      const connect = this.connectMetamask.bind(this)
-      setTimeout(connect, 3000)
+    const connect = this.connectMetamask.bind(this)
+    setTimeout(connect, 3000)
     metamaskBus.$on('logout', (data: WalletProvider) => {
       this.logWalletOut(data)
     })
@@ -110,12 +160,11 @@ export default Vue.extend({
     async buildWalletBody(
       provider: WalletProvider
     ): Promise<Array<WalletBody>> {
-      const address = await invoker.resolveCurrentAddress();
-      const id: Chains = await invoker.getNetworkVersion();
+      const address = await invoker.resolveCurrentAddress()
+      const id: Chains = await invoker.getNetworkVersion()
       const label: string = availableChains[id]
         ? availableChains[id].chainName
         : 'Unknown'
-
       const oldWalletData = this.$store.getters['wallet/currentWallet']
       const updatedWalletBody = {
         isConnected: true,
@@ -147,24 +196,25 @@ export default Vue.extend({
       const wallet = this.$store.getters['wallet/currentWallet']
       const provider = wallet.provider
       this.userConnectOccured = false
-      this.$store.dispatch('wallet/disconnectWallet', { provider }) // передавать кошелек для разлогина
+      this.$store.dispatch('wallet/disconnectWallet', { provider })
     },
     logWalletOut(walletName: WalletProvider) {
-      // добавил строку кошелька который разлогиниваем
-      // необходимо передавать какой кошелек мы разлогиниваем
       window.localStorage.removeItem('logged_once')
       window.localStorage.removeItem('logged_once_phantom')
       clearInterval(this.balanceWatchInterval)
       setTimeout(this.dispatch.bind(this, walletName), 1000)
     },
     async connectMetamask() {
-      const isConnected = connector.ethEnabled() // возвращает тру и подлкючает аддресс
+      const isConnected = connector.ethEnabled()
       if (!isConnected) {
         return
       }
       await this.checkWalletData(WalletProvider.Metamask)
       this.userConnectOccured = true
-      window.localStorage.setItem('logged_once', 'true') // change to wallet name logged_once_phantom (DONE)
+      window.localStorage.setItem('logged_once', 'true') 
+      this.$store.dispatch('wallet/updateCanData', {
+        provider: WalletProvider.Metamask,
+      })
     },
     async onClickMetamaskConnect() {
       try {
