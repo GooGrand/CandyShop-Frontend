@@ -3,6 +3,7 @@ import { Commit, GetterTree, ActionTree } from 'vuex'
 import { Chains } from '~/utils/metamask'
 import { Can, getCanBalance } from '~/utils/candies'
 import { TokenAmount } from '~/utils/safe-math'
+import Big from 'big.js'
 
 export enum WalletProvider {
   Metamask,
@@ -12,7 +13,7 @@ type State = {
   [key in WalletProvider]: WalletBody
 }
 
-interface UserCanData {
+export interface UserCanData {
   paid: TokenAmount
   earned: TokenAmount
   token: Can
@@ -22,6 +23,7 @@ export interface WalletBody {
   provider: WalletProvider | null
   isConnected: boolean
   checked: boolean
+  totalEarned: string
   wallet: Wallet
   activeCans: UserCanData[]
   address: string
@@ -53,6 +55,7 @@ export const buildWallet = (provider = null): WalletBody => {
     checked: false,
     isConnected: false,
     address: '',
+    totalEarned: "0",
     activeCans: [],
     wallet: {
       label: '',
@@ -74,15 +77,17 @@ export const actions: ActionTree<State, any> = {
      */
     const available = [...rootState.cans.cans]
     const cans = [];
+    let totalEarned = Big(0)
     for (const token of available) {
       const [paid, earned] = await getCanBalance(token, state[WalletProvider.Metamask].address)
       /**
        * It is beter to save the whole Can in case of array shuffle.
        * Accessing the property by index is faster, but unsecure
        */
-      cans.push({earned, paid, token})
+      cans.push({ earned, paid, token })
+      totalEarned = earned.toWei().add(totalEarned)
     }
-    commit("updateCans", {provider, cans})
+    commit('updateWalletData', {provider, body:{totalEarned: new TokenAmount(totalEarned, 18).fixed(4), activeCans: cans}})
   },
   disconnectWallet(
     { commit }: { commit: Commit },
@@ -98,10 +103,6 @@ export const actions: ActionTree<State, any> = {
 }
 
 export const mutations = {
-  updateCans(state: State, { provider, cans }: { provider: WalletProvider, cans: UserCanData[] }) {
-    // Use operator spread to prevent possible mutations
-    state[provider].activeCans = [...cans]
-  },
   updateWalletData(
     state: State,
     { provider, body }: { provider: WalletProvider; body: WalletBody }
@@ -126,6 +127,16 @@ export const getters: GetterTree<State, any> = {
       }
     }
     return null
+  },
+  userCandies: (state: State) => {
+    for (const wallet of Object.keys(state)) {
+      //@ts-ignore
+      if (state[wallet] && state[wallet].checked) {
+        //@ts-ignore
+        return state[wallet].activeCans
+      }
+      return []
+    }
   },
   isWalletAvailable: (_, getters) => Boolean(getters.currentWallet),
 }

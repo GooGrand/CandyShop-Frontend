@@ -75,13 +75,13 @@ export async function getCans(
 export async function getCanBalance(
   { rpc_url, can_address }: Can,
   userAddress: string
-): Promise<string[]> {
+): Promise<TokenAmount[]> {
   const web3 = createWeb3Instance(rpc_url)
   const contract = new web3.eth.Contract(CanAbi as AbiItem[], can_address)
   const { providedAmount, aggregatedReward } = await contract.methods
     .usersInfo(userAddress)
     .call()
-  return [providedAmount, aggregatedReward]
+  return [new TokenAmount(providedAmount, 18), new TokenAmount(aggregatedReward, 18)]
 }
 
 /**

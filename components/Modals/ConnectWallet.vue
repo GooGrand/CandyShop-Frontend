@@ -170,6 +170,8 @@ export default Vue.extend({
         isConnected: true,
         address,
         checked: true,
+        activeCans: [],
+        totalEarned: "0",
         wallet: { id, label },
         provider,
       }

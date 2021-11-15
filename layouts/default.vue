@@ -23,7 +23,6 @@ import Vue from 'vue'
 export default Vue.extend({
   async mounted() {
     await this.$store.dispatch("cans/uploadCans");
-    await this.$store.dispatch("wallet/updateCanData");
   }
 })
 </script>
