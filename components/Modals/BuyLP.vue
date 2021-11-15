@@ -224,17 +224,22 @@
         </div>
         <div class="">the standard fee of the outbound network</div>
       </div>
-      <div v-if="!isWalletAvailable" class="flex mt-[22px]" >
+      <div v-if="!isWalletAvailable" class="flex mt-[22px]">
+        <btn block rounded variant="gradient" @click="connect">
+          Connect MetaMask
+        </btn>
+      </div>
+      <div v-else-if="invalidChain" class="flex mt-[22px]">
         <btn
           block
           rounded
           variant="gradient"
-          @click="connect"
+          @click="switchChain(can.chain_meta.chain_id)"
         >
-          Connect MetaMask
+          Switch to {{ can.chain_name }}
         </btn>
       </div>
-      <div v-else class="flex mt-[22px]" >
+      <div v-else class="flex mt-[22px]">
         <btn
           v-if="status === Status.Approve"
           block
@@ -264,7 +269,12 @@
 import Vue from 'vue'
 import { Can, amountLpOut } from '~/utils/candies'
 import { TokenAmount } from '~/utils/safe-math'
-import { Invoker, toPlainString } from '~/utils/metamask'
+import {
+  availableChains,
+  Chains,
+  Invoker,
+  toPlainString,
+} from '~/utils/metamask'
 import { WalletBody } from '~/store/wallet'
 import logger from '~/utils/logger'
 import { createWeb3Instance } from '~/plugins/web3'
@@ -287,9 +297,17 @@ export default Vue.extend({
     weiToSend: '',
   }),
   computed: {
+    invalidChain(): boolean {
+      if (!this.currentWallet) return true
+      // eslint-disable-next-line
+      return this.can.chain_meta.chain_id != this.currentWallet.wallet.id
+    },
     invalidInput(): boolean {
-      // @ts-ignore
-      return Number(this.amount) === 0 || this.amount > this.tokenBalance.toEther().toNumber();
+      return (
+        Number(this.amount) === 0 ||
+        // @ts-ignore
+        this.amount > this.tokenBalance.toEther().toNumber()
+      )
     },
     amountLpOut(): string {
       if (!this.amount) return '0'
@@ -335,8 +353,11 @@ export default Vue.extend({
     }
   },
   methods: {
+    async switchChain(id: Chains) {
+      await invoker.switchMetamaskNetwork(availableChains[id])
+    },
     connect() {
-         const modal = JSON.parse(
+      const modal = JSON.parse(
         JSON.stringify(this.$store.getters['app/exampleModals'].connectWallet)
       )
 
@@ -347,24 +368,23 @@ export default Vue.extend({
       this.$store.commit('app/PUSH_MODAL', modal)
     },
     async setBalance() {
-      if(!this.isWalletAvailable) return;
-      let amount;
+      if (!this.isWalletAvailable) return
+      let amount
       let decimals
-      if(this.can.pool_meta.native) {
-      ({ amount, decimals } = await invoker.nativeTokenBalance(
-        createWeb3Instance(this.can.rpc_url),
-        this.currentWallet.address
-      ))
+      if (this.can.pool_meta.native) {
+        ;({ amount, decimals } = await invoker.nativeTokenBalance(
+          createWeb3Instance(this.can.rpc_url),
+          this.currentWallet.address
+        ))
       } else {
-      ({ amount, decimals } = await invoker.tokenBalanceAndDecimals(
-        createWeb3Instance(this.can.rpc_url),
-        this.can.token_a_address,
-        this.currentWallet.address
-      ))
+        ;({ amount, decimals } = await invoker.tokenBalanceAndDecimals(
+          createWeb3Instance(this.can.rpc_url),
+          this.can.token_a_address,
+          this.currentWallet.address
+        ))
       }
       this.tokenBalance = amount
       this.decimals = Number(decimals)
-
     },
     async approve() {
       if (!this.amount) return

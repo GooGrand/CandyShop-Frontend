@@ -6,7 +6,7 @@ import CanAbi from '~/abis/Can.json'
 
 interface ChainMeta {
   chain_icon: string
-  chain_id: 250
+  chain_id: Chains
   chain_name: string
   img: string
   search: string
@@ -63,7 +63,7 @@ export const defaultCan: Can = {
   candyshop_address: '0x17e1cC157893F61a3f981F8f6D6E1940014699ED',
   chain_meta: {
     chain_icon: '/img/gton/table-images/chain/ftm.svg',
-    chain_id: 250,
+    chain_id: "250" as Chains,
     chain_name: 'Fantom',
     img: '/img/relaySwap/chains/fantom.svg',
     search: 'ftmfantom',

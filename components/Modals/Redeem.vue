@@ -159,7 +159,22 @@
         </div>
         <div class="">the standard fee of the outbound network</div>
       </div>
-      <div class="flex mt-5">
+      <div v-if="!isWalletAvailable" class="flex mt-5">
+        <btn block rounded variant="gradient" @click="connect">
+          Connect MetaMask
+        </btn>
+      </div>
+      <div v-else-if="invalidChain" class="flex mt-5">
+        <btn
+          block
+          rounded
+          variant="gradient"
+          @click="switchChain(can.chain_meta.chain_id)"
+        >
+          Switch to {{ can.chain_name }}
+        </btn>
+      </div>
+      <div v-else class="flex mt-5">
         <btn rounded block variant="gradient" @click="confirmRedeem">
           Redeem
         </btn>
@@ -173,7 +188,12 @@ import Vue from 'vue'
 import { UserCanData } from '~/store/wallet'
 import { Can } from '~/utils/candies'
 import logger from '~/utils/logger'
-import { Invoker, toPlainString } from '~/utils/metamask'
+import {
+  availableChains,
+  Chains,
+  Invoker,
+  toPlainString,
+} from '~/utils/metamask'
 import { TokenAmount } from '~/utils/safe-math'
 
 const invoker = new Invoker()
@@ -182,14 +202,22 @@ export default Vue.extend({
   data: () => ({
     connected: false,
     amount: 0,
-    processing: false
+    processing: false,
   }),
   computed: {
+    invalidChain(): boolean {
+      if (!this.isWalletAvailable) return true
+      // eslint-disable-next-line
+      return this.can.chain_meta.chain_id != this.currentWallet.wallet.id
+    },
     canData(): UserCanData {
       return this.$store.getters['cans/redeemCan']
     },
     currentWallet() {
-      return this.$store.getters['wallets/currentWallet']
+      return this.$store.getters['wallet/currentWallet']
+    },
+    isWalletAvailable() {
+      return this.$store.getters['wallet/isWalletAvailable']
     },
     can(): Can {
       return this.canData.token
@@ -214,6 +242,20 @@ export default Vue.extend({
     },
   },
   methods: {
+    connect() {
+      const modal = JSON.parse(
+        JSON.stringify(this.$store.getters['app/exampleModals'].connectWallet)
+      )
+
+      modal.data.callbackConnect = () => {
+        this.connected = true
+        this.$store.commit('app/CLOSE_MODAL')
+      }
+      this.$store.commit('app/PUSH_MODAL', modal)
+    },
+    async switchChain(id: Chains) {
+      await invoker.switchMetamaskNetwork(availableChains[id])
+    },
     async getDecimals(): Promise<number> {
       if (this.can.pool_meta.native) return 18
       const { decimals } = await invoker.tokenBalanceAndDecimals(
@@ -235,7 +277,7 @@ export default Vue.extend({
           .toNumber()
       )
       try {
-        this.processing = true;
+        this.processing = true
         await invoker.burnCan(
           this.$web3,
           this.can.can_address,

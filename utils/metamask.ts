@@ -125,6 +125,7 @@ const hexToChainMap: { [key: string]: Chains } = {
   '0x64': Chains.Xdai,
   '0x80': Chains.Heco,
   '0xa86a': Chains.Avax,
+  "0x42": Chains.Okex
 }
 
 export class Invoker {

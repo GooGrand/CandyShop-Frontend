@@ -56,15 +56,7 @@ export const buildWallet = (provider = null): WalletBody => {
     isConnected: false,
     address: '',
     totalEarned: "0",
-    activeCans: [{
-      earned: new TokenAmount(15, 18, false).fixed(4),
-      paid: new TokenAmount(1, 18, false).fixed(4),
-      token: defaultCan
-    }, {
-      earned: new TokenAmount(15, 18, false).fixed(4),
-      paid: new TokenAmount(1, 18, false).fixed(4),
-      token: defaultCan
-    }],
+    activeCans: [],
     wallet: {
       label: '',
       id: Chains.Eth,
@@ -92,10 +84,10 @@ export const actions: ActionTree<State, any> = {
        * It is beter to save the whole Can in case of array shuffle.
        * Accessing the property by index is faster, but unsecure
        */
-      // if (Number(paid.fixed(4)) > 0) {
+      if (Number(paid) > 0) {
         cans.push({ earned, paid, token })
         totalEarned = Number(earned)
-      // }
+      }
     }
     commit('updateWalletData', {provider, body:{totalEarned: new TokenAmount(totalEarned, 18).fixed(4), activeCans: cans}})
   },
