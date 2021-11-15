@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import { Commit, GetterTree, ActionTree } from 'vuex'
 import { Chains } from '~/utils/metamask'
-import { Can, getCanBalance } from '~/utils/candies'
+import { Can, getCanBalance, defaultCan } from '~/utils/candies'
 import { TokenAmount } from '~/utils/safe-math'
 import Big from 'big.js'
 
@@ -14,8 +14,8 @@ type State = {
 }
 
 export interface UserCanData {
-  paid: TokenAmount
-  earned: TokenAmount
+  paid: string
+  earned: string
   token: Can
 }
 
@@ -56,7 +56,15 @@ export const buildWallet = (provider = null): WalletBody => {
     isConnected: false,
     address: '',
     totalEarned: "0",
-    activeCans: [],
+    activeCans: [{
+      earned: new TokenAmount(15, 18, false).fixed(4),
+      paid: new TokenAmount(1, 18, false).fixed(4),
+      token: defaultCan
+    }, {
+      earned: new TokenAmount(15, 18, false).fixed(4),
+      paid: new TokenAmount(1, 18, false).fixed(4),
+      token: defaultCan
+    }],
     wallet: {
       label: '',
       id: Chains.Eth,
@@ -77,15 +85,17 @@ export const actions: ActionTree<State, any> = {
      */
     const available = [...rootState.cans.cans]
     const cans = [];
-    let totalEarned = Big(0)
+    let totalEarned = 0
     for (const token of available) {
       const [paid, earned] = await getCanBalance(token, state[WalletProvider.Metamask].address)
       /**
        * It is beter to save the whole Can in case of array shuffle.
        * Accessing the property by index is faster, but unsecure
        */
-      cans.push({ earned, paid, token })
-      totalEarned = earned.toWei().add(totalEarned)
+      // if (Number(paid.fixed(4)) > 0) {
+        cans.push({ earned, paid, token })
+        totalEarned = Number(earned)
+      // }
     }
     commit('updateWalletData', {provider, body:{totalEarned: new TokenAmount(totalEarned, 18).fixed(4), activeCans: cans}})
   },

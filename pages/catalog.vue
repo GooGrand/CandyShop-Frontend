@@ -268,7 +268,7 @@ export default Vue.extend({
       this.dropdown = false
     },
     openBuyLP(item: Can) {
-      this.$store.commit('cans/setCan', item)
+      this.$store.commit('cans/setCurrentCan', item)
       // Deep copy object
       const modal = JSON.parse(
         JSON.stringify(this.$store.getters['app/exampleModals'].buy)

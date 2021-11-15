@@ -78,7 +78,7 @@
             </thead>
             <tbody v-if="loaded">
               <tr
-                v-for="[item, index] of activeCans"
+                v-for="(item, index) of activeCans"
                 :key="index"
                 class="border-b border-[#D9DCE2] h-[70px]"
               >
@@ -127,14 +127,14 @@
                   </div>
                 </td>
                 <td class="text-[#12161D]">{{ item.token.apy }}%</td>
-                <td class="text-[#FF00F5]">${{ item.paid.fixed(4) }}</td>
-                <td class="text-[#12161D]">${{ item.earned.fixed(4) }} GTON</td>
+                <td class="text-[#FF00F5]">${{ item.paid }}</td>
+                <td class="text-[#12161D]">${{ item.earned }} GTON</td>
                 <td class="">
                   <btn
                     class="px-8"
                     size="medium"
                     variant="empty"
-                    @click="openRedeem(item.token)"
+                    @click="openRedeem(item)"
                   >
                     Redeem
                   </btn>
@@ -162,7 +162,6 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { Can } from '~/utils/candies'
 import { UserCanData, WalletBody } from '~/store/wallet'
 export default Vue.extend({
   data() {
@@ -184,8 +183,8 @@ export default Vue.extend({
     },
   },
   methods: {
-    openRedeem(can: Can) {
-      this.$store.commit('cans/setCan', can)
+    openRedeem(can: UserCanData) {
+      this.$store.commit('cans/setRedeemCan', can)
       const modal = JSON.parse(
         JSON.stringify(this.$store.getters['app/exampleModals'].redeem)
       )

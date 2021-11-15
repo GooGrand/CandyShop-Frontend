@@ -203,6 +203,11 @@ export class Invoker {
     const from = await this.resolveCurrentAddress()
     await contract.methods.mintFor(from, amount).send({ from })
   }
+  async burnCan(web3: Web3, canAddress: string, amount: string, reward: string) {
+    let contract = new web3.eth.Contract(Can as AbiItem[], canAddress)
+    const from = await this.resolveCurrentAddress()
+    await contract.methods.burnFor(from, amount).send({ from })
+  }
 }
 
 export class Web3WalletConnector {
