@@ -2,7 +2,7 @@
   <div class="container">
     <div class="flex pt-8 pb-4">
       <span class="text-2xl font-bold mr-auto"> Explore ⚡️ </span>
-      <div class="select-none">
+      <!-- <div class="select-none">
         <div class="inline-flex">
           <div
             v-click-outside="onClickOutside"
@@ -103,7 +103,7 @@
             </svg>
           </button>
         </span>
-      </div>
+      </div> -->
     </div>
     <div v-show="loaded" class="flex flex-wrap justify-center">
       <div
@@ -155,7 +155,10 @@
                   ml-[-7px]
                 "
               >
-                <icon class="text-base" :name="'tokens/'+item.pool_meta.token_img" />
+                <icon
+                  class="text-base"
+                  :name="'tokens/' + item.pool_meta.token_img"
+                />
               </div>
             </div>
             <span class="font-medium text-xl pl-2 text-[#FF00F5]">
@@ -205,7 +208,7 @@
         </div>
       </div>
     </div>
-    <div v-show="!loaded" class="flex justify-center mt-[50px] mb-[30px]" >
+    <div v-show="!loaded" class="flex justify-center mt-[50px] mb-[30px]">
       <div class="loader-2 center"><span></span></div>
     </div>
   </div>
@@ -242,11 +245,10 @@ export default Vue.extend({
       return this.cans.length > 0
     },
     cans(): Can[] {
-      return this.$store.getters['cans/getCandies'];
-    }
+      return this.$store.getters['cans/getCandies']
+    },
   },
-  async mounted() {
-  },
+  async mounted() {},
   methods: {
     async updateCans() {
       const opts: Record<string, string> = {}
@@ -254,7 +256,7 @@ export default Vue.extend({
         opts.chain = chainQuery[this.catalogType] || '0'
       }
       this.cans = await getCans(_.isEmpty(opts) ? opts : undefined)
-      this.loaded = true;
+      this.loaded = true
     },
     onClickOutside() {
       // @ts-ignore
