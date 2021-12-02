@@ -1,5 +1,5 @@
 {
-  "name": "graviton-web-morpha-alpha",
+  "name": "candyshop-web",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -45,7 +45,7 @@
     "@nuxtjs/storybook": "^4.1.1",
     "@nuxtjs/stylelint-module": "^4.0.0",
     "@nuxtjs/tailwindcss": "^4.2.1",
-    "@types/big.js": "^6.1.1",
+    "@types/big.js": "^6.1.2",
     "@types/lodash": "^4.14.176",
     "autoprefixer": "^10.3.4",
     "big.js": "^6.1.1",

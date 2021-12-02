@@ -29,7 +29,7 @@
       >
     </nuxt-link>
 
-    <button
+    <!-- <button
       class="
         relative
         flex
@@ -69,7 +69,7 @@
         "
         >SIGN UP</span
       >
-    </button>
+    </button> -->
   </div>
 </template>
 

@@ -25,7 +25,7 @@
             alt=""
           />
         </div>
-        <div class="flex mx-1 md:mx-5 lg:mx-10 py-[10px] items-end">
+        <!-- <div class="flex mx-1 md:mx-5 lg:mx-10 py-[10px] items-end">
           2 Chains
           <img
             src="~/assets/img/icons/pipe.png"
@@ -44,7 +44,7 @@
             height="20"
             alt=""
           />
-        </div>
+        </div> -->
       </div>
     </div>
     <div class="block shadow-lg">

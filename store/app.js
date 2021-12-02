@@ -11,7 +11,7 @@ export const state = () => ({
       //   label: 'Docs',
       // },
       {
-        href: 'https://github.com/Candy-Shop-One/CandyShop-web',
+        href: 'https://github.com/GTON-capital',
         label: 'Github',
       },
       // {
@@ -39,7 +39,7 @@ export const state = () => ({
     ],
     partners: [
       {
-        href: '/',
+        href: 'https://graviton.one',
         label: 'Graviton',
       },
       {
@@ -57,7 +57,7 @@ export const state = () => ({
       //   icon: 'mono/medium',
       // },
       {
-        href: 'https://github.com/Candy-Shop-One/CandyShop-web',
+        href: 'https://github.com/GTON-capital',
         icon: 'mono/github',
       },
       {
@@ -78,63 +78,67 @@ export const state = () => ({
         href: '/',
         label: 'About',
       },
-      {
-        href: '/',
-        label: 'Analytics charts',
-      },
+      // {
+      //   href: '/',
+      //   label: 'Analytics charts',
+      // },
       {
         href: 'https://twitter.com/0xCandyDapp',
         label: 'Twitter',
       },
-      {
-        href: '/',
-        main: true,
-        label: 'Resources',
-      },
-      {
-        href: '/',
-        label: 'Docs',
-      },
-      {
-        href: '/',
-        label: 'FAQ',
-      },
-      {
-        href: '/',
-        label: 'Blog',
-      },
+      // {
+      //   href: '/',
+      //   main: true,
+      //   label: 'Resources',
+      // },
+      // {
+      //   href: '/',
+      //   label: 'Docs',
+      // },
+      // {
+      //   href: '/',
+      //   label: 'FAQ',
+      // },
+      // {
+      //   href: '/',
+      //   label: 'Blog',
+      // },
       {
         href: 'https://github.com/SuSy-One/candyshop-web',
         label: 'Github',
       },
 
-      {
-        href: '/',
-        main: true,
-        label: 'Help',
-      },
+      // {
+      //   href: '/',
+      //   main: true,
+      //   label: 'Help',
+      // },
 
-      {
-        href: '/',
-        label: 'Support',
-      },
+      // {
+      //   href: '/',
+      //   label: 'Support',
+      // },
     ],
     navigation: [
+      // {
+      //   route: 'About',
+      //   label: 'About',
+      // },
       {
-        route: 'About',
-        label: 'About',
+        route: 'catalog',
+        label: 'Catalog',
       },
       {
         route: 'cabinet',
         label: 'My candies',
       },
-      {
-        disabled: true,
-        disabledTitle: 'soon',
-        interface: true,
-        route: 'Analytics-charts',
-        label: 'Analytics charts',
-      },
+      // {
+      //   disabled: true,
+      //   disabledTitle: 'soon',
+      //   interface: true,
+      //   route: 'Analytics-charts',
+      //   label: 'Analytics charts',
+      // },
     ],
     partners: [
       {
@@ -151,12 +155,12 @@ export const state = () => ({
         href: 'https://twitter.com/0xCandyDapp',
         icon: 'mono/twitter',
       },
+      // {
+      //   href: '/',
+      //   icon: 'mono/medium',
+      // },
       {
-        href: '/',
-        icon: 'mono/medium',
-      },
-      {
-        href: 'https://github.com/SuSy-One/candyshop-web',
+        href: 'https://github.com/GTON-capital',
         icon: 'mono/github',
       },
       {
