@@ -125,6 +125,7 @@ const hexToChainMap: { [key: string]: Chains } = {
   '0x64': Chains.Xdai,
   '0x80': Chains.Heco,
   '0xa86a': Chains.Avax,
+  "0x42": Chains.Okex
 }
 
 export class Invoker {
@@ -202,6 +203,11 @@ export class Invoker {
     let contract = new web3.eth.Contract(Can as AbiItem[], canAddress)
     const from = await this.resolveCurrentAddress()
     await contract.methods.mintFor(from, amount).send({ from })
+  }
+  async burnCan(web3: Web3, canAddress: string, amount: string, reward: string) {
+    let contract = new web3.eth.Contract(Can as AbiItem[], canAddress)
+    const from = await this.resolveCurrentAddress()
+    await contract.methods.burnFor(from, amount).send({ from })
   }
 }
 

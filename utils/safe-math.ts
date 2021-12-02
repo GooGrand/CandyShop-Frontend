@@ -10,8 +10,6 @@ export class TokenAmount {
   public _decimals: Big
 
   constructor(wei: number | string | Big, decimals: number = 1, isWei = true) {
-    console.log(decimals);
-    console.log(wei);
     this.decimals = decimals
     this._decimals = new Big(10).pow(decimals)
     
