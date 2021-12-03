@@ -146,15 +146,6 @@
             </div>
           </table>
         </div>
-        <div
-          class="text-[#12161D] text-opacity-50 text-sm absolute bottom-[25px]"
-        >
-          Wanna see you transactions? Go to
-          <a class="hover:no-underline underline" href="/">
-            Etherscan
-            <icon class="text-base text-[#12161D]" name="mono/goto" />
-          </a>
-        </div>
       </div>
     </div>
   </div>

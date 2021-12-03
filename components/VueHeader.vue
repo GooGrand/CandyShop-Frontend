@@ -123,7 +123,7 @@
             </div>
           </div> -->
 
-          <div
+          <!-- <div
             :class="
               currentWallet.wallet.id === Chains.Eth ? 'border-[#FF00F5]' : ''
             "
@@ -148,7 +148,7 @@
               :src="currentChainPic"
               width="100"
             />
-          </div>
+          </div> -->
           <div
             class="
               flex
@@ -249,7 +249,7 @@ export default Vue.extend({
       return this.$store.getters['wallet/currentWallet']
     },
     currentAddress(): string {
-      if(!this.isWalletAvailable) return '';
+      if (!this.isWalletAvailable) return ''
       return (
         this.currentWallet.address.slice(0, 6) +
         '...' +
