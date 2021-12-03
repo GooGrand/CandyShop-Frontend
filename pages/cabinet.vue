@@ -122,7 +122,7 @@
                       </div>
                     </div>
                     <div class="flex font-medium text-lg text-[#FF00F5]">
-                      lp_GTON-{{ item.token.pool_meta.token_pair_name }}
+                      can{{ item.token.pool_meta.token_pair_name }}
                     </div>
                   </div>
                 </td>

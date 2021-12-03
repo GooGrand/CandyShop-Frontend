@@ -147,18 +147,6 @@
           </div> -->
         </div>
       </div>
-      <div class="sm:flex mt-4 text-[10px] font-medium">
-        <div class="text-[#12161D] text-opacity-50 mr-auto">
-          Estemated transaction time:
-        </div>
-        <div class="">~ 5 minutes</div>
-      </div>
-      <div class="sm:flex mt-2 text-[10px] font-medium">
-        <div class="text-[#12161D] text-opacity-50 mr-auto">
-          Estemated transaction fee:
-        </div>
-        <div class="">the standard fee of the outbound network</div>
-      </div>
       <div v-if="!isWalletAvailable" class="flex mt-5">
         <btn block rounded variant="gradient" @click="connect">
           Connect MetaMask

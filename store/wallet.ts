@@ -1,22 +1,23 @@
 import _ from 'lodash'
 import { Commit, GetterTree, ActionTree } from 'vuex'
 import { Chains } from '~/utils/metamask'
-import { Can, getCanBalance, defaultCan } from '~/utils/candies'
+import { Can, getCanBalance } from '~/utils/candies'
 import { TokenAmount } from '~/utils/safe-math'
-import Big from 'big.js'
 
 export enum WalletProvider {
   Metamask,
 }
 
-type State = {
-  [key in WalletProvider]: WalletBody
-}
 
 export interface UserCanData {
   paid: string
   earned: string
   token: Can
+}
+
+export interface Wallet {
+  label: string
+  id: Chains
 }
 
 export interface WalletBody {
@@ -29,9 +30,9 @@ export interface WalletBody {
   address: string
 }
 
-export interface Wallet {
-  label: string
-  id: Chains
+
+type State = {
+  [key in WalletProvider]: WalletBody
 }
 
 export function isWalletEqual(walletA: WalletBody, walletB: WalletBody) {
@@ -41,7 +42,6 @@ export function isWalletEqual(walletA: WalletBody, walletB: WalletBody) {
     const [valueA, valueB] = [_.get(walletA, prop), _.get(walletB, prop)]
 
     if (valueA !== valueB) {
-      console.log({ valueA, valueB })
       return false
     }
   }
@@ -78,6 +78,7 @@ export const actions: ActionTree<State, any> = {
     const available = [...rootState.cans.cans]
     const cans = [];
     let totalEarned = 0
+    let totalPaid = 0
     for (const token of available) {
       const [paid, earned] = await getCanBalance(token, state[WalletProvider.Metamask].address)
       /**
@@ -87,9 +88,16 @@ export const actions: ActionTree<State, any> = {
       if (Number(paid) > 0) {
         cans.push({ earned, paid, token })
         totalEarned = Number(earned)
+        totalPaid = Number(paid)
       }
     }
-    commit('updateWalletData', {provider, body:{totalEarned: new TokenAmount(totalEarned, 18).fixed(4), activeCans: cans}})
+    commit('updateWalletData', { provider, 
+      body: { 
+        totalEarned: new TokenAmount(totalEarned, 18).fixed(4), 
+        totalPaid: new TokenAmount(totalPaid, 18).fixed(4), 
+        activeCans: cans }
+      }
+    )
   },
   disconnectWallet(
     { commit }: { commit: Commit },
@@ -122,9 +130,9 @@ export const getters: GetterTree<State, any> = {
   currentWallet: (state: State) => {
     // we look through available wallets and take the first one that is logged
     for (const wallet of Object.keys(state)) {
-      //@ts-ignore
+      // @ts-ignore
       if (state[wallet] && state[wallet].checked) {
-        //@ts-ignore
+        // @ts-ignore
         return state[wallet]
       }
     }
@@ -132,9 +140,9 @@ export const getters: GetterTree<State, any> = {
   },
   userCandies: (state: State) => {
     for (const wallet of Object.keys(state)) {
-      //@ts-ignore
+      // @ts-ignore
       if (state[wallet] && state[wallet].checked) {
-        //@ts-ignore
+        // @ts-ignore
         return state[wallet].activeCans
       }
       return []

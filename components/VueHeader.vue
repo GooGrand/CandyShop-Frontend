@@ -16,7 +16,7 @@
         "
       >
         <div class="flex mx-1 md:mx-5 lg:mx-10 py-[10px] items-end">
-          10 Farms
+          2 Farms
           <img
             src="~/assets/img/icons/tractor.png"
             class="mx-[6px]"
