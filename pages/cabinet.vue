@@ -161,7 +161,7 @@ export default Vue.extend({
   computed: {
     farmedBalance(): string {
       if (!this.currentWallet) return '0'
-      return this.currentWallet.totalEarned
+      return this.currentWallet.canTotalBalance
     },
     activeCans(): UserCanData[] {
       return this.$store.getters['wallet/userCandies']

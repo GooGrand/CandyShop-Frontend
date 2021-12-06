@@ -1,12 +1,13 @@
 import { AbiItem } from 'web3-utils'
 import Web3 from 'web3'
+import { TokenAmount } from './safe-math'
 
 /**
  * ABI imports
  */
 import ERC20 from '~/abis/ERC20.json'
 import Can from '~/abis/Can.json'
-import { TokenAmount } from './safe-math'
+import Converter from '~/abis/Converter.json'
 
 declare global {
   interface Window {
@@ -130,9 +131,9 @@ const hexToChainMap: { [key: string]: Chains } = {
 
 export class Invoker {
   async switchMetamaskNetwork(chain: MetamaskChain) {
-    let { chainIdHex, chainName, rpcUrls, nativeCurrency, blockExplorerUrls } =
+    const { chainIdHex, chainName, rpcUrls, nativeCurrency, blockExplorerUrls } =
       chain
-    if (chainIdHex == availableChains[Chains.Eth].chainIdHex) {
+    if (chainIdHex === availableChains[Chains.Eth].chainIdHex) {
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
         params: [
@@ -157,10 +158,12 @@ export class Invoker {
       ],
     })
   }
+
   async getNetworkVersion(): Promise<Chains> {
-    let res = await window.ethereum.request({ method: 'eth_chainId' })
+    const res = await window.ethereum.request({ method: 'eth_chainId' })
     return hexToChainMap[res]
   }
+
   async resolveCurrentAddress() {
     await window.ethereum.enable()
     const addressList = await window.ethereum.request({
@@ -168,30 +171,33 @@ export class Invoker {
     })
     return addressList[0].toLowerCase()
   }
+
   async approveToken(
     web3: Web3,
     token: string,
     lockAddress: string,
     amount: string
   ) {
-    let contract = new web3.eth.Contract(ERC20 as AbiItem[], token)
+    const contract = new web3.eth.Contract(ERC20 as AbiItem[], token)
     await contract.methods
       .approve(lockAddress, amount)
       .send({ from: await this.resolveCurrentAddress() })
   }
+
   async tokenBalanceAndDecimals(
     web3: Web3,
     token: string,
     userAddress: string
   ): Promise<{ amount: TokenAmount; decimals: number }> {
-    let contract = new web3.eth.Contract(ERC20 as AbiItem[], token)
+    const contract = new web3.eth.Contract(ERC20 as AbiItem[], token)
     const decimals = await contract.methods.decimals.call().call()
     const res = await contract.methods.balanceOf(userAddress).call()
     return {
       amount: new TokenAmount(res, Number(decimals)),
-      decimals: decimals,
+      decimals,
     }
   }
+
   async nativeTokenBalance(
     web3: Web3,
     address: string
@@ -199,15 +205,23 @@ export class Invoker {
     const balance = await web3.eth.getBalance(address)
     return { amount: new TokenAmount(balance, 18), decimals: 18 }
   }
+
   async mintCan(web3: Web3, canAddress: string, amount: string) {
-    let contract = new web3.eth.Contract(Can as AbiItem[], canAddress)
+    const contract = new web3.eth.Contract(Can as AbiItem[], canAddress)
     const from = await this.resolveCurrentAddress()
     await contract.methods.mintFor(from, amount).send({ from })
   }
+
   async burnCan(web3: Web3, canAddress: string, amount: string, reward: string) {
-    let contract = new web3.eth.Contract(Can as AbiItem[], canAddress)
+    const contract = new web3.eth.Contract(Can as AbiItem[], canAddress)
     const from = await this.resolveCurrentAddress()
     await contract.methods.burnFor(from, amount).send({ from })
+  }
+
+  async getRelictPrice(web3: Web3, convertor: string): Promise<number> {
+    const contract = new web3.eth.Contract(Convertor as AbiItem[], convertor)
+    const res = await contract.methods.price.call().call()
+    return res
   }
 }
 

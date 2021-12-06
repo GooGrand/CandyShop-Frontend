@@ -1,6 +1,6 @@
+import { AbiItem } from 'web3-utils'
 import { Chains } from './metamask'
 import { TokenAmount } from './safe-math'
-import { AbiItem } from 'web3-utils'
 import { createWeb3Instance } from '~/plugins/web3'
 import CanAbi from '~/abis/Can.json'
 
@@ -21,6 +21,7 @@ interface PoolMeta {
 }
 export type Can = {
   apy: string
+  gton_address: string;
   can_address: string
   candyshop_address: string
   chain_meta: ChainMeta
@@ -46,6 +47,7 @@ export type Can = {
   total_locked: string
   tvl: number
   wormhole_address: string
+  secondTokenPrice?: string
 }
 
 const baseUrl = 'https://cache.api.graviton.one/'
@@ -81,6 +83,7 @@ export const defaultCan: Can = {
   lp_price: 3.634362134903878e-18,
   lp_total_supply: '825275711504949114',
   pool_address: '0x51d44F0D376d2a09863CBDd2726969577DDDd48d',
+  gton_address: '',
   pool_id: 24,
   pool_meta: {
     token_img: 'ftm',
